@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+  <h2>Dashboard</h2>
+  <p>
+  {{ summary.total }} observations ·
+  {{ summary.learners }} learners ·
+  {{ summary.skills }} skills
+</p>
+<p>
+  <a href="{{ url_for('week') }}">View weekly summary
+</a>
+</p>
+
+</div>
+
+{% endblock %}

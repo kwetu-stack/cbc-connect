@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Observations</h2>
+
+{% for o in observations %}
+  <div style="margin-bottom:12px; padding:12px; border:1px solid #ddd; border-radius:6px;">
+    <strong>{{ o.learner_name }}</strong> — {{ o.class_name }}<br>
+    {{ o.activity }} • {{ o.skill }} • {{ o.level }}<br>
+    <small>{{ o.created_at }}</small>
+  </div>
+{% else %}
+  <p>No observations yet.</p>
+{% endfor %}
+
+{% endblock %}

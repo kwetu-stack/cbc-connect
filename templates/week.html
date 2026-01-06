@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #111;
+    margin: 0;
+    padding: 16px;
+  }
+
+  .header {
+    margin-bottom: 20px;
+  }
+
+  .header h2 {
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .sub {
+    font-size: 13px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  .summary {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+
+  .summary p {
+    margin: 6px 0;
+    font-size: 14px;
+  }
+
+  .affirm {
+    font-size: 14px;
+    color: #333;
+    margin-top: 20px;
+  }
+
+  .back {
+    margin-top: 24px;
+    text-align: center;
+  }
+
+  .back a {
+    font-size: 13px;
+    color: #555;
+    text-decoration: none;
+  }
+</style>
+
+<div class="header">
+  <h2>This Week</h2>
+  <div class="sub">Week of 13–17 May</div>
+</div>
+
+<div class="summary">
+  <p>✔ Observations recorded this week</p>
+  <p>✔ Multiple classes covered</p>
+  <p>✔ Different skills observed</p>
+</div>
+
+<div class="summary">
+  <p>{{ summary.total }} observations recorded</p>
+  <p>{{ summary.learners }} learners observed</p>
+  <p>{{ summary.skills }} skills covered</p>
+</div>
+
+<div class="affirm">
+  Your CBC records are up to date.
+</div>
+
+<div class="back">
+  <a href="{{ url_for('classes') }}">Back to classes</a>
+</div>
+
+{% endblock %}

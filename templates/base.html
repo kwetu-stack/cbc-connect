@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CBC-Connect v2</title>
+
+    <!-- REQUIRED for mobile toggle -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body>
+
+<nav>
+    <div class="brand">CBC-Connect</div>
+
+    <!-- Mobile toggle -->
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">
+        <span id="nav-icon">☰</span>
+    </button>
+
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('classes') }}">Classes</a>
+        <a href="{{ url_for('observations') }}">Observations</a>
+        <a href="{{ url_for('reports') }}">Reports</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</nav>
+
+{% block content %}{% endblock %}
+
+<script>
+  function toggleNav() {
+    const nav = document.querySelector('.nav-links');
+    const icon = document.getElementById('nav-icon');
+
+    nav.classList.toggle('active');
+
+    if (nav.classList.contains('active')) {
+      icon.textContent = '✕';
+    } else {
+      icon.textContent = '☰';
+    }
+  }
+</script>
+
+</body>
+</html>
