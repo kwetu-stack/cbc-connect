@@ -8,12 +8,13 @@
     .header {
       margin-bottom: 24px;
     }
-    .header .teacher {
-      font-size: 14px;
-      color: #94A3B8;
-    }
-    .header .date {
+    .header .role {
       font-size: 13px;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    .header .subtitle {
+      font-size: 14px;
       color: #94A3B8;
     }
     .class-list a {
@@ -36,15 +37,20 @@
     }
   </style>
 
+  <!-- Header -->
   <div class="header">
-    <div class="teacher">Mr. Kamau — Mathematics</div>
-    <div class="date">Tuesday, 14 May</div>
+    <div class="role">Teacher View</div>
+    <div class="subtitle">
+      Select a class to view learners and record observations.
+    </div>
   </div>
 
+  <!-- Classes -->
   <div class="class-list">
     {% for c in classes %}
       <a href="{{ url_for('learners', class_id=c.id) }}" class="today">
-        {{ c.name }} <span>Today</span>
+        {{ c.name }}
+        <span>Open</span>
       </a>
     {% endfor %}
   </div>

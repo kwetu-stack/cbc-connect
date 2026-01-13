@@ -3,16 +3,29 @@
 {% block content %}
 
 <div class="container">
-  <h2>Dashboard</h2>
+
+  <!-- Role Indicator -->
+  <div style="padding:10px; background:#f0f8ff; border:1px solid #cce;">
+    <strong>Teacher View</strong>
+  </div>
+
+  <!-- Page Header -->
+  <h2 style="margin-top:15px;">Teacher Dashboard</h2>
+  <p style="color:#666;">
+    Overview of your recent classroom observations.
+  </p>
+
+  <!-- Summary -->
   <p>
-  {{ summary.total }} observations ·
-  {{ summary.learners }} learners ·
-  {{ summary.skills }} skills
-</p>
-<p>
-  <a href="{{ url_for('week') }}">View weekly summary
-</a>
-</p>
+    <strong>{{ summary.total }}</strong> observations ·
+    <strong>{{ summary.learners }}</strong> learners ·
+    <strong>{{ summary.skills }}</strong> skills
+  </p>
+
+  <!-- Navigation Hint -->
+  <p>
+    <a href="{{ url_for('week') }}">View weekly summary</a>
+  </p>
 
 </div>
 

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h2>{{ teacher.name }}</h2>
+    <p class="muted">
+        {{ teacher.subject }} · {{ teacher.email }}
+    </p>
+
+    <!-- SUMMARY -->
+    <div class="card">
+        <h3>Summary</h3>
+        <p>
+            <strong>{{ summary.total_learners }}</strong> learners<br>
+            <strong>{{ summary.total_observations }}</strong> observations (all-time)<br>
+            <strong>{{ summary.observations_last_7_days }}</strong> observations (last 7 days)
+        </p>
+    </div>
+
+    <!-- CLASSES -->
+    <div class="card">
+        <h3>Classes</h3>
+
+        {% if classes %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Class</th>
+                    <th>Subject</th>
+                    <th>Learners</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in classes %}
+                <tr>
+                    <td>{{ c.name }}</td>
+                    <td>{{ c.subject }}</td>
+                    <td>{{ c.learner_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p class="muted">No classes found.</p>
+        {% endif %}
+    </div>
+
+    <!-- OBSERVATIONS -->
+    <div class="card">
+        <h3>Recent Observations</h3>
+
+        {% if observations %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Class</th>
+                    <th>Learner</th>
+                    <th>Skill</th>
+                    <th>Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in observations %}
+                <tr>
+                    <td>{{ o.created_at }}</td>
+                    <td>{{ o.class_name }}</td>
+                    <td>{{ o.learner_name }}</td>
+                    <td>{{ o.skill }}</td>
+                    <td>{{ o.level }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p class="muted">No observations found.</p>
+        {% endif %}
+    </div>
+
+    <a href="{{ url_for('principal_teachers') }}">← Back to Teachers</a>
+
+</div>
+{% endblock %}

@@ -94,6 +94,25 @@ th {
   background: #f8fafc;
   font-weight: 600;
 }
+/* ---------- Table Text Color Contract (CRITICAL) ---------- */
+table {
+  background: #ffffff;
+  color: #111827;
+}
+
+th {
+  background: #f8fafc;
+  color: #111827;
+}
+
+td {
+  color: #111827;
+}
+
+/* Zebra striping for readability */
+tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
 
 /* ---------- Cards ---------- */
 .card {
@@ -102,6 +121,24 @@ th {
   padding: 14px;
   margin-bottom: 12px;
   border: 1px solid #e5e7eb;
+}
+/* ---------- Dashboard Metrics ---------- */
+.metric {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #0f172a; /* Kwetu dark navy */
+  line-height: 1.1;
+}
+
+.card h3 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.card small {
+  color: #64748b;
 }
 
 /* ---------- Mobile Layout ---------- */

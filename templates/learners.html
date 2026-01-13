@@ -2,43 +2,53 @@
 
 {% block content %}
 
-<style>
-  body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #ffffff;
-    color: #111;
-    margin: 0;
-    padding: 16px;
-  }
-  .header {
-    margin-bottom: 20px;
-  }
-  .header h2 {
-    font-size: 16px;
-    margin: 0;
-  }
-  a.learner {
-    display: block;
-    padding: 14px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    text-decoration: none;
-    color: #111;
-  }
-</style>
+<div class="container">
 
-<div class="header">
-  <h2>Learners</h2>
+  <style>
+    .header {
+      margin-bottom: 20px;
+    }
+    .header .role {
+      font-size: 13px;
+      color: #38bdf8;
+      font-weight: 600;
+    }
+    .header .subtitle {
+      font-size: 14px;
+      color: #94A3B8;
+    }
+    a.learner {
+      display: block;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #1f2937;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #E2E8F0;
+      background: #0b1220;
+    }
+  </style>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="role">Teacher View</div>
+    <h2>Learners</h2>
+    <div class="subtitle">
+      Select a learner to record a classroom observation.
+    </div>
+  </div>
+
+  <!-- Learner List -->
+  {% for learner in learners %}
+    <a
+  href="{{ url_for('observe', learner_id=learner.id, class_id=request.args.get('class_id')) }}"
+  class="learner"
+>
+  {{ learner.name }}
+</a>
+
+  {% endfor %}
+
 </div>
-
-{% for learner in learners %}
-  <a
-    href="{{ url_for('observe', learner_id=learner.id) }}"
-    class="learner"
-  >
-    {{ learner.name }}
-  </a>
-{% endfor %}
 
 {% endblock %}

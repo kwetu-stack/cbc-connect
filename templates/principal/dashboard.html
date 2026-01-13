@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page">
+
+    <h1>Principal Dashboard</h1>
+    <p class="muted">Read-only overview of school activity</p>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Teachers</h3>
+            <p class="metric">{{ summary.total_teachers }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Classes</h3>
+            <p class="metric">{{ summary.total_classes }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Learners</h3>
+            <p class="metric">{{ summary.total_learners }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Observations</h3>
+            <p class="metric">{{ summary.total_observations }}</p>
+            <small class="muted">
+                {{ summary.last_7_days }} in last 7 days
+            </small>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Observation</title>
+</head>
+<body>
+
+    <h2>Edit Observation</h2>
+
+    <form method="post">
+
+        <p>
+            <strong>Activity</strong><br>
+            <input
+                type="text"
+                name="activity"
+                value="{{ observation.activity }}"
+                required
+            >
+        </p>
+
+        <p>
+            <strong>Skill</strong><br>
+            <input
+                type="text"
+                name="skill"
+                value="{{ observation.skill }}"
+                required
+            >
+        </p>
+
+        <p>
+            <strong>Level</strong><br>
+            <select name="level" required>
+                <option value="Doing well"
+                    {% if observation.level == "Doing well" %}selected{% endif %}
+                >Doing well</option>
+
+                <option value="Improving"
+                    {% if observation.level == "Improving" %}selected{% endif %}
+                >Improving</option>
+
+                <option value="Needs support"
+                    {% if observation.level == "Needs support" %}selected{% endif %}
+                >Needs support</option>
+            </select>
+        </p>
+
+        <p>
+            <strong>Note</strong><br>
+            <textarea
+                name="note"
+                rows="4"
+            >{{ observation.note }}</textarea>
+        </p>
+
+        <p>
+            <button type="submit">Save changes</button>
+            |
+            <a href="{{ url_for('observations') }}">Cancel</a>
+        </p>
+
+    </form>
+
+</body>
+</html>

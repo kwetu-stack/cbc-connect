@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+
+    <h2>Teachers</h2>
+    <p class="muted">
+        Principal view — read-only access to teachers and their observation records.
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in teachers %}
+            <tr>
+                <td>{{ t.name }}</td>
+                <td>{{ t.subject }}</td>
+                <td>
+                    <a href="{{ url_for('principal_teacher_view', teacher_id=t.id) }}">
+                        View
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}
