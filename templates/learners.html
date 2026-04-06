@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #111;
+    margin: 0;
+    padding: 16px;
+  }
+  .header {
+    margin-bottom: 20px;
+  }
+  .header h2 {
+    font-size: 16px;
+    margin: 0;
+  }
+  a.learner {
+    display: block;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #111;
+  }
+</style>
+
+<div class="header">
+  <h2>Learners</h2>
+</div>
+
+{% for learner in learners %}
+  <a
+    href="{{ url_for('observe', learner_id=learner.id) }}"
+    class="learner"
+  >
+    {{ learner.name }}
+  </a>
+{% endfor %}
+
+{% endblock %}

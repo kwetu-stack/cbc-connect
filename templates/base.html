@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CBC-Connect v2</title>
+
+    <!-- REQUIRED for mobile toggle -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body>
+
+{% if demo_mode %}
+<div style="background:#f59e0b;color:#000;padding:8px;text-align:center;font-weight:600;">
+    Demo Mode - Changes will not be saved
+</div>
+{% endif %}
+
+<nav>
+    <div class="brand">CBC-Connect</div>
+
+    <!-- Mobile toggle -->
+    <button class="nav-toggle" onclick="toggleNav()" aria-label="Toggle navigation">
+        <span id="nav-icon">☰</span>
+    </button>
+
+    <div class="nav-links">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('classes') }}">Classes</a>
+        <a href="{{ url_for('observations') }}">Observations</a>
+        <a href="{{ url_for('reports') }}">Reports</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="padding:16px;">
+      {% for category, message in messages %}
+        <div style="margin:0 auto 12px;max-width:960px;padding:12px 14px;border-radius:10px;background:#ecfeff;color:#0f172a;border:1px solid #a5f3fc;">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+
+<script>
+  function toggleNav() {
+    const nav = document.querySelector('.nav-links');
+    const icon = document.getElementById('nav-icon');
+
+    nav.classList.toggle('active');
+
+    if (nav.classList.contains('active')) {
+      icon.textContent = '✕';
+    } else {
+      icon.textContent = '☰';
+    }
+  }
+</script>
+
+</body>
+</html>

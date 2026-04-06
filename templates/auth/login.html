@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="login-card">
+        <h1>CBC-Connect</h1>
+        <p class="subtitle">Teacher Login</p>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" required />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+
+            {% if error %}
+            <p class="error">{{ error }}</p>
+            {% endif %}
+
+            <button type="submit">Sign in</button>
+        </form>
+
+        <p class="footer-note">
+            CBC-Connect · Teacher Observation System
+        </p>
+    </div>
+</div>
+{% endblock %}
+

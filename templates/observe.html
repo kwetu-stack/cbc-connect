@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #111;
+    margin: 0;
+    padding: 16px;
+  }
+
+  .context {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 20px;
+  }
+
+  .section {
+    margin-bottom: 24px;
+  }
+
+  .section h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .option {
+    display: block;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+
+  .option input {
+    margin-right: 8px;
+  }
+
+  .save-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .note {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+
+  .back {
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  .back a {
+    font-size: 13px;
+    color: #555;
+    text-decoration: none;
+  }
+</style>
+
+<div class="context">
+  {{ learner.class_name }} • {{ learner.learner_name }}
+</div>
+
+
+<form method="POST">
+
+  <div class="section">
+    <h3>Activity</h3>
+    <label class="option"><input type="radio" name="activity" value="Group work"> Group work</label>
+    <label class="option"><input type="radio" name="activity" value="Oral response"> Oral response</label>
+    <label class="option"><input type="radio" name="activity" value="Practical task"> Practical task</label>
+    <label class="option"><input type="radio" name="activity" value="Written task"> Written task</label>
+    <label class="option"><input type="radio" name="activity" value="Observation"> Observation</label>
+  </div>
+
+  <div class="section">
+    <h3>Skill observed</h3>
+    <label class="option"><input type="radio" name="skill" value="Communication"> Communication</label>
+    <label class="option"><input type="radio" name="skill" value="Collaboration"> Collaboration</label>
+    <label class="option"><input type="radio" name="skill" value="Critical thinking"> Critical thinking</label>
+    <label class="option"><input type="radio" name="skill" value="Creativity"> Creativity</label>
+    <label class="option"><input type="radio" name="skill" value="Self-management"> Self-management</label>
+  </div>
+
+  <div class="section">
+    <h3>Observation</h3>
+    <label class="option"><input type="radio" name="level" value="Doing well"> 🟢 Doing well</label>
+    <label class="option"><input type="radio" name="level" value="Improving"> 🟡 Improving</label>
+    <label class="option"><input type="radio" name="level" value="Needs support"> 🔴 Needs support</label>
+  </div>
+
+  <div class="section">
+    <h3>Add note (optional)</h3>
+    <textarea class="note" name="note" rows="2" placeholder="One short sentence (optional)"></textarea>
+  </div>
+
+  <button type="submit" class="save-btn">
+    Save observation
+  </button>
+
+</form>
+
+<div class="back">
+  <a href="{{ url_for('learners') }}">Cancel and return</a>
+</div>
+
+{% endblock %}

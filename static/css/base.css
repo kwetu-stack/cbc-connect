@@ -1,0 +1,206 @@
+/* ==============================
+   Kwetu Partners – Core Styling
+   CBC-Connect v2 (Final)
+   ============================== */
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0b1220;
+  color: #e2e8f0;
+}
+
+/* ---------- Top Navigation ---------- */
+nav {
+  background: linear-gradient(90deg, #0f172a, #1e293b);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Navigation links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+nav a {
+  color: #e5e7eb;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+nav a:hover {
+  color: #38bdf8;
+}
+
+/* ---------- Mobile Toggle Button (FULL RESET) ---------- */
+.nav-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  box-shadow: none;
+  border-radius: 0;
+  font-size: 22px;
+  color: #e2e8f0;
+  cursor: pointer;
+  display: none;
+
+  /* kill mobile tap circle */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Page Container ---------- */
+.container {
+  max-width: 960px;
+  margin: 28px auto;
+  background: #ffffff;
+  color: #111827;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+p {
+  font-size: 14px;
+  color: #374151;
+}
+
+/* ---------- Tables ---------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+th {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+/* ---------- Mobile Layout ---------- */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+}
+/* ---------- FINAL Mobile Toggle Fix ---------- */
+.nav-toggle {
+  font-size: 22px;
+  color: #e2e8f0;
+  cursor: pointer;
+
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Kill focus + active visuals completely */
+.nav-toggle:focus,
+.nav-toggle:active,
+.nav-toggle:focus-visible {
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+}
+/* ---------- Mobile Toggle HARD RESET (Kwetu standard) ---------- */
+.nav-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+
+  padding: 0;
+  margin: 0;
+
+  width: auto;
+  height: auto;
+
+  color: #e2e8f0;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Kill focus/tap artifacts */
+.nav-toggle:focus,
+.nav-toggle:focus-visible,
+.nav-toggle:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Mobile only */
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: block;
+  }
+}
+nav {
+  position: relative;
+}
+
+/* Toggle button positioning */
+.nav-toggle {
+  margin-left: auto;     /* pushes it to the far right */
+}
+
+/* Mobile open state – make ❌ float top-right */
+@media (max-width: 768px) {
+  .nav-toggle {
+    position: absolute;
+    top: 14px;
+    right: 24px;
+  }
+}
