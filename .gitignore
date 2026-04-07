@@ -2,5 +2,9 @@
 __pycache__/
 *.pyc
 instance/*.sqlite
+instance/*.db
+instance/*.db-wal
+instance/*.db-shm
+instance/*.db-journal
 instance/*.db-journal
 .env

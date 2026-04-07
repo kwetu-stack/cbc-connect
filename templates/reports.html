@@ -57,6 +57,7 @@
           <th>Activity</th>
           <th>Skill</th>
           <th>Level</th>
+          <th>Note</th>
         </tr>
       </thead>
       <tbody>
@@ -68,6 +69,7 @@
           <td>{{ o.activity }}</td>
           <td>{{ o.skill }}</td>
           <td>{{ o.level }}</td>
+          <td>{{ o.note or '' }}</td>
         </tr>
         {% endfor %}
       </tbody>

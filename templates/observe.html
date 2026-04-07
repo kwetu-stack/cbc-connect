@@ -80,32 +80,32 @@
 
   <div class="section">
     <h3>Activity</h3>
-    <label class="option"><input type="radio" name="activity" value="Group work"> Group work</label>
-    <label class="option"><input type="radio" name="activity" value="Oral response"> Oral response</label>
-    <label class="option"><input type="radio" name="activity" value="Practical task"> Practical task</label>
-    <label class="option"><input type="radio" name="activity" value="Written task"> Written task</label>
-    <label class="option"><input type="radio" name="activity" value="Observation"> Observation</label>
+    <label class="option"><input type="radio" name="activity" value="Group work" required {% if activity == 'Group work' %}checked{% endif %}> Group work</label>
+    <label class="option"><input type="radio" name="activity" value="Oral response" {% if activity == 'Oral response' %}checked{% endif %}> Oral response</label>
+    <label class="option"><input type="radio" name="activity" value="Practical task" {% if activity == 'Practical task' %}checked{% endif %}> Practical task</label>
+    <label class="option"><input type="radio" name="activity" value="Written task" {% if activity == 'Written task' %}checked{% endif %}> Written task</label>
+    <label class="option"><input type="radio" name="activity" value="Observation" {% if activity == 'Observation' %}checked{% endif %}> Observation</label>
   </div>
 
   <div class="section">
     <h3>Skill observed</h3>
-    <label class="option"><input type="radio" name="skill" value="Communication"> Communication</label>
-    <label class="option"><input type="radio" name="skill" value="Collaboration"> Collaboration</label>
-    <label class="option"><input type="radio" name="skill" value="Critical thinking"> Critical thinking</label>
-    <label class="option"><input type="radio" name="skill" value="Creativity"> Creativity</label>
-    <label class="option"><input type="radio" name="skill" value="Self-management"> Self-management</label>
+    <label class="option"><input type="radio" name="skill" value="Communication" required {% if skill == 'Communication' %}checked{% endif %}> Communication</label>
+    <label class="option"><input type="radio" name="skill" value="Collaboration" {% if skill == 'Collaboration' %}checked{% endif %}> Collaboration</label>
+    <label class="option"><input type="radio" name="skill" value="Critical thinking" {% if skill == 'Critical thinking' %}checked{% endif %}> Critical thinking</label>
+    <label class="option"><input type="radio" name="skill" value="Creativity" {% if skill == 'Creativity' %}checked{% endif %}> Creativity</label>
+    <label class="option"><input type="radio" name="skill" value="Self-management" {% if skill == 'Self-management' %}checked{% endif %}> Self-management</label>
   </div>
 
   <div class="section">
     <h3>Observation</h3>
-    <label class="option"><input type="radio" name="level" value="Doing well"> 🟢 Doing well</label>
-    <label class="option"><input type="radio" name="level" value="Improving"> 🟡 Improving</label>
-    <label class="option"><input type="radio" name="level" value="Needs support"> 🔴 Needs support</label>
+    <label class="option"><input type="radio" name="level" value="Doing well" required {% if level == 'Doing well' %}checked{% endif %}> 🟢 Doing well</label>
+    <label class="option"><input type="radio" name="level" value="Improving" {% if level == 'Improving' %}checked{% endif %}> 🟡 Improving</label>
+    <label class="option"><input type="radio" name="level" value="Needs support" {% if level == 'Needs support' %}checked{% endif %}> 🔴 Needs support</label>
   </div>
 
   <div class="section">
     <h3>Add note (optional)</h3>
-    <textarea class="note" name="note" rows="2" placeholder="One short sentence (optional)"></textarea>
+    <textarea class="note" name="note" rows="2" placeholder="One short sentence (optional)">{{ note or '' }}</textarea>
   </div>
 
   <button type="submit" class="save-btn">
@@ -115,7 +115,7 @@
 </form>
 
 <div class="back">
-  <a href="{{ url_for('learners') }}">Cancel and return</a>
+  <a href="{{ url_for('learners', class_id=learner.class_id) }}">Cancel and return</a>
 </div>
 
 {% endblock %}

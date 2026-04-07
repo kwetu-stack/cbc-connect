@@ -1,8 +1,22 @@
+import os
 import sqlite3
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-DB_PATH = BASE_DIR / "instance" / "cbc.db"
+_default_db = BASE_DIR / "instance" / "cbc.db"
+_env_db = os.getenv("CBC_DB_PATH")
+
+# If the repo lives in OneDrive, SQLite locks are common. Prefer a local temp DB
+# unless the user explicitly overrides via CBC_DB_PATH.
+if _env_db:
+    DB_PATH = Path(_env_db).expanduser()
+else:
+    repo_path_str = str(BASE_DIR)
+    if "OneDrive" in repo_path_str or "onedrive" in repo_path_str.lower():
+        tmp = os.getenv("TEMP") or os.getenv("TMP") or str(BASE_DIR / "instance")
+        DB_PATH = Path(tmp) / "cbc-connect.db"
+    else:
+        DB_PATH = _default_db
 DEMO_WRITE_BLOCKED = False
 
 DEMO_TEACHER = {
@@ -16,8 +30,20 @@ DEMO_TEACHER = {
 # DB CONNECTION
 # -------------------------------------------------
 def get_db():
-    conn = sqlite3.connect(DB_PATH)
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    # SQLite can easily hit "database is locked" on Windows if multiple app
+    # instances are running or a write is briefly contended. Use a longer timeout
+    # plus busy_timeout/WAL to make writes more resilient for teacher workflows.
+    conn = sqlite3.connect(DB_PATH, timeout=30, check_same_thread=False)
     conn.row_factory = sqlite3.Row
+    try:
+        conn.execute("PRAGMA foreign_keys = ON;")
+        conn.execute("PRAGMA journal_mode = WAL;")
+        conn.execute("PRAGMA synchronous = NORMAL;")
+        conn.execute("PRAGMA busy_timeout = 30000;")
+    except sqlite3.OperationalError:
+        # Some PRAGMAs can fail depending on environment; keep the app usable.
+        pass
     return conn
 
 
@@ -225,25 +251,38 @@ def save_observation(
     level,
     note
 ):
-    conn = get_db()
-    cur = conn.cursor()
-
     if DEMO_WRITE_BLOCKED:
-        conn.close()
         return False
 
-    cur.execute(
-        """
-        INSERT INTO observations
-        (teacher_id, class_name, learner_id, activity, skill, level, note)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """,
-        (teacher_id, class_name, learner_id, activity, skill, level, note)
-    )
+    # Retry a couple times on transient SQLite locks (very common on Windows).
+    for _ in range(3):
+        conn = get_db()
+        cur = conn.cursor()
+        try:
+            cur.execute(
+                """
+                INSERT INTO observations
+                (teacher_id, class_name, learner_id, activity, skill, level, note)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (teacher_id, class_name, learner_id, activity, skill, level, note),
+            )
+            ok = commit_if_allowed(conn)
+            return ok
+        except sqlite3.OperationalError as e:
+            msg = str(e).lower()
+            conn.rollback()
+            if "locked" in msg or "busy" in msg:
+                # brief backoff and retry
+                import time
 
-    commit_if_allowed(conn)
-    conn.close()
-    return True
+                time.sleep(0.2)
+                continue
+            raise
+        finally:
+            conn.close()
+
+    return False
 
 
 def get_recent_observations(teacher_id, limit=5):
@@ -271,28 +310,156 @@ def get_recent_observations(teacher_id, limit=5):
     conn.close()
     return rows
 
-def get_all_observations(teacher_id):
+def _apply_observation_filters(base_sql, params, filters):
+    if not filters:
+        return base_sql, params
+
+    sql = base_sql
+    if filters.get("class_id"):
+        sql += " AND classes.id = ?"
+        params.append(filters["class_id"])
+    if filters.get("learner_id"):
+        sql += " AND learners.id = ?"
+        params.append(filters["learner_id"])
+    if filters.get("skill"):
+        sql += " AND observations.skill = ?"
+        params.append(filters["skill"])
+    if filters.get("level"):
+        sql += " AND observations.level = ?"
+        params.append(filters["level"])
+    if filters.get("from_date"):
+        sql += " AND date(observations.created_at) >= date(?)"
+        params.append(filters["from_date"])
+    if filters.get("to_date"):
+        sql += " AND date(observations.created_at) <= date(?)"
+        params.append(filters["to_date"])
+
+    return sql, params
+
+
+def get_all_observations(teacher_id, filters=None):
     conn = get_db()
     cur = conn.cursor()
 
-    cur.execute("""
+    base_sql = """
         SELECT
+            observations.id,
             observations.created_at,
             classes.name AS class_name,
             learners.name AS learner_name,
+            learners.id AS learner_id,
             observations.activity,
             observations.skill,
-            observations.level
+            observations.level,
+            observations.note
         FROM observations
         JOIN learners ON observations.learner_id = learners.id
         JOIN classes ON learners.class_id = classes.id
         WHERE observations.teacher_id = ?
-        ORDER BY observations.created_at DESC
-    """, (teacher_id,))
+    """
+    params = [teacher_id]
+    sql, params = _apply_observation_filters(base_sql, params, filters)
+    sql += " ORDER BY observations.created_at DESC"
 
+    cur.execute(sql, params)
     rows = cur.fetchall()
     conn.close()
     return rows
+
+
+def get_observation_by_id(teacher_id, observation_id):
+    conn = get_db()
+    cur = conn.cursor()
+
+    cur.execute(
+        """
+        SELECT
+            observations.id,
+            observations.teacher_id,
+            observations.learner_id,
+            observations.activity,
+            observations.skill,
+            observations.level,
+            observations.note,
+            observations.created_at,
+            learners.name AS learner_name,
+            classes.name AS class_name
+        FROM observations
+        JOIN learners ON observations.learner_id = learners.id
+        JOIN classes ON learners.class_id = classes.id
+        WHERE observations.teacher_id = ?
+          AND observations.id = ?
+        """,
+        (teacher_id, observation_id),
+    )
+    row = cur.fetchone()
+    conn.close()
+    return row
+
+
+def update_observation(teacher_id, observation_id, activity, skill, level, note):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
+        """
+        UPDATE observations
+        SET activity = ?, skill = ?, level = ?, note = ?
+        WHERE teacher_id = ? AND id = ?
+        """,
+        (activity, skill, level, note, teacher_id, observation_id),
+    )
+    commit_if_allowed(conn)
+    conn.close()
+
+
+def delete_observation(teacher_id, observation_id):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute(
+        "DELETE FROM observations WHERE teacher_id = ? AND id = ?",
+        (teacher_id, observation_id),
+    )
+    commit_if_allowed(conn)
+    conn.close()
+
+
+def clear_observations_for_teacher(teacher_id, allow_in_demo=False):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM observations WHERE teacher_id = ?", (teacher_id,))
+    commit_if_allowed(conn, allow_in_demo=allow_in_demo)
+    conn.close()
+
+
+def get_learner_summary(teacher_id, learner_id, filters=None):
+    conn = get_db()
+    cur = conn.cursor()
+
+    base_sql = """
+        SELECT
+            COUNT(*) as total,
+            COUNT(DISTINCT skill) as skills,
+            SUM(CASE WHEN level = 'Doing well' THEN 1 ELSE 0 END) as doing_well,
+            SUM(CASE WHEN level = 'Improving' THEN 1 ELSE 0 END) as improving,
+            SUM(CASE WHEN level = 'Needs support' THEN 1 ELSE 0 END) as needs_support
+        FROM observations
+        JOIN learners ON observations.learner_id = learners.id
+        JOIN classes ON learners.class_id = classes.id
+        WHERE observations.teacher_id = ?
+          AND learners.id = ?
+    """
+    params = [teacher_id, learner_id]
+    sql, params = _apply_observation_filters(base_sql, params, filters)
+    cur.execute(sql, params)
+    row = cur.fetchone()
+    conn.close()
+    return {
+        "total": row["total"] or 0,
+        "skills": row["skills"] or 0,
+        "doing_well": row["doing_well"] or 0,
+        "improving": row["improving"] or 0,
+        "needs_support": row["needs_support"] or 0,
+    }
 
 
 
@@ -329,6 +496,7 @@ def get_learner_with_class(learner_id):
         SELECT
             learners.id as learner_id,
             learners.name as learner_name,
+            classes.id as class_id,
             classes.name as class_name,
             classes.subject as subject
         FROM learners

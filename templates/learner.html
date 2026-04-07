@@ -5,37 +5,36 @@
 <div class="container">
   <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;">
     <div>
-      <h2>Observations</h2>
-      <p style="margin:6px 0 0;">Filter quickly, then export or correct records.</p>
+      <h2>{{ learner.learner_name }}</h2>
+      <p style="margin:6px 0 0;">{{ learner.class_name }} • {{ learner.subject }}</p>
     </div>
     <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <a href="{{ url_for('export_observations_csv', **request.args) }}">Export CSV</a>
-      <a href="{{ url_for('classes') }}">Record more</a>
+      <a href="{{ url_for('observe', learner_id=learner.learner_id, class_id=learner.class_id) }}">Record observation</a>
+      <a href="{{ url_for('learners', class_id=learner.class_id) }}">Back to learners</a>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:16px;">
+    <div class="card">
+      <div style="font-size:12px;color:#6b7280;">Total observations</div>
+      <div style="font-size:20px;font-weight:700;margin-top:6px;">{{ summary.total }}</div>
+    </div>
+    <div class="card">
+      <div style="font-size:12px;color:#6b7280;">Skills covered</div>
+      <div style="font-size:20px;font-weight:700;margin-top:6px;">{{ summary.skills }}</div>
+    </div>
+    <div class="card">
+      <div style="font-size:12px;color:#6b7280;">Levels</div>
+      <div style="margin-top:8px;font-size:13px;color:#374151;">
+        🟢 Doing well: <strong>{{ summary.doing_well }}</strong><br>
+        🟡 Improving: <strong>{{ summary.improving }}</strong><br>
+        🔴 Needs support: <strong>{{ summary.needs_support }}</strong>
+      </div>
     </div>
   </div>
 
   <form method="GET" style="margin-top:14px;border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#f8fafc;">
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
-      <div>
-        <div style="font-size:12px;color:#374151;margin-bottom:6px;">Class</div>
-        <select name="class_id" style="padding:8px;border:1px solid #d1d5db;border-radius:8px;min-width:180px;">
-          <option value="">All</option>
-          {% for c in classes %}
-            <option value="{{ c.id }}" {% if filters.class_id == c.id %}selected{% endif %}>{{ c.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <div>
-        <div style="font-size:12px;color:#374151;margin-bottom:6px;">Learner</div>
-        <select name="learner_id" style="padding:8px;border:1px solid #d1d5db;border-radius:8px;min-width:180px;">
-          <option value="">All</option>
-          {% for l in learners %}
-            <option value="{{ l.id }}" {% if filters.learner_id == l.id %}selected{% endif %}>{{ l.name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
       <div>
         <div style="font-size:12px;color:#374151;margin-bottom:6px;">Skill</div>
         <select name="skill" style="padding:8px;border:1px solid #d1d5db;border-radius:8px;min-width:180px;">
@@ -67,23 +66,18 @@
 
       <div style="display:flex;gap:10px;align-items:center;">
         <button type="submit" style="padding:10px 14px;border-radius:10px;border:1px solid #111827;background:#111827;color:#fff;cursor:pointer;">Apply</button>
-        <a href="{{ url_for('observations') }}">Reset</a>
+        <a href="{{ url_for('learner', learner_id=learner.learner_id) }}">Reset</a>
+        <a href="{{ url_for('export_observations_csv', learner_id=learner.learner_id, **request.args) }}">Export CSV</a>
       </div>
-    </div>
-    <div style="font-size:12px;color:#6b7280;margin-top:8px;">
-      Tip: choose a class first to narrow the learner list.
     </div>
   </form>
 
   <div style="margin-top:16px;">
+    <h3 style="margin:0 0 10px;">Observation history</h3>
     {% for o in observations %}
       <div class="card" style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;">
         <div style="min-width:0;">
-          <div style="font-weight:700;">
-            <a href="{{ url_for('learner', learner_id=o.learner_id) }}">{{ o.learner_name }}</a>
-            <span style="font-weight:500;color:#6b7280;">— {{ o.class_name }}</span>
-          </div>
-          <div style="margin-top:6px;">{{ o.activity }} • {{ o.skill }} • {{ o.level }}</div>
+          <div style="font-weight:700;">{{ o.activity }} • {{ o.skill }} • {{ o.level }}</div>
           {% if o.note %}
             <div style="margin-top:6px;color:#374151;">“{{ o.note }}”</div>
           {% endif %}
@@ -91,12 +85,16 @@
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
           <a href="{{ url_for('edit_observation', observation_id=o.id) }}">Edit</a>
+          <form method="POST" action="{{ url_for('remove_observation', observation_id=o.id) }}" onsubmit="return confirm('Delete this observation?');">
+            <button type="submit" style="border:0;background:transparent;color:#b91c1c;cursor:pointer;padding:0;">Delete</button>
+          </form>
         </div>
       </div>
     {% else %}
-      <p style="margin-top:14px;">No observations yet.</p>
+      <p>No observations yet for this learner.</p>
     {% endfor %}
   </div>
 </div>
 
 {% endblock %}
+

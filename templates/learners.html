@@ -2,43 +2,31 @@
 
 {% block content %}
 
-<style>
-  body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: #ffffff;
-    color: #111;
-    margin: 0;
-    padding: 16px;
-  }
-  .header {
-    margin-bottom: 20px;
-  }
-  .header h2 {
-    font-size: 16px;
-    margin: 0;
-  }
-  a.learner {
-    display: block;
-    padding: 14px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    text-decoration: none;
-    color: #111;
-  }
-</style>
+<div class="container">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;">
+    <div>
+      <h2>Learners</h2>
+      <p style="margin:6px 0 0;">Tap a learner to view history, or record a new observation.</p>
+    </div>
+    <div>
+      <a href="{{ url_for('classes') }}" style="font-size:13px;">Back to classes</a>
+    </div>
+  </div>
 
-<div class="header">
-  <h2>Learners</h2>
+  <div style="margin-top:16px;">
+    {% for learner in learners %}
+      <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+        <div>
+          <div style="font-weight:600;">{{ learner.name }}</div>
+          <div style="font-size:13px;color:#6b7280;">Learner record</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+          <a href="{{ url_for('learner', learner_id=learner.id) }}">View history</a>
+          <a href="{{ url_for('observe', learner_id=learner.id, class_id=class_id) }}">Record</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 </div>
-
-{% for learner in learners %}
-  <a
-    href="{{ url_for('observe', learner_id=learner.id) }}"
-    class="learner"
-  >
-    {{ learner.name }}
-  </a>
-{% endfor %}
 
 {% endblock %}
