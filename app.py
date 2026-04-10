@@ -37,14 +37,21 @@ app.secret_key = "cbc-connect-v2-secret"  # will be replaced later
 app.config["DEBUG"] = False
 
 DEMO_MODE = os.getenv("DEMO_MODE", "true").lower() == "true"
-DEMO_BLOCK_WRITES = os.getenv("DEMO_BLOCK_WRITES", "false").lower() == "true"
+DEMO_BLOCK_WRITES = os.getenv(
+    "DEMO_BLOCK_WRITES",
+    "true" if DEMO_MODE else "false",
+).lower() == "true"
 
 
 def is_demo():
     return DEMO_MODE
 
 
-set_demo_write_blocked(is_demo() and DEMO_BLOCK_WRITES)
+def demo_writes_blocked():
+    return is_demo() and DEMO_BLOCK_WRITES
+
+
+set_demo_write_blocked(demo_writes_blocked())
 
 # -------------------------------------------------
 # TEMP teacher account (for flow testing only)
@@ -59,7 +66,10 @@ TEACHER = {
 
 @app.context_processor
 def inject_demo_mode():
-    return {"demo_mode": is_demo(), "demo_block_writes": DEMO_BLOCK_WRITES}
+    return {
+        "demo_mode": is_demo(),
+        "demo_block_writes": demo_writes_blocked(),
+    }
 
 
 @app.route("/demo/reset", methods=["POST"])
@@ -251,6 +261,10 @@ def observe():
                 note=note,
             )
 
+        if demo_writes_blocked():
+            flash("Demo mode: this observation was not saved.", "info")
+            return redirect(url_for("learner", learner_id=learner_id))
+
         ok = save_observation(
             teacher_id,
             learner["class_name"],
@@ -402,6 +416,10 @@ def edit_observation(observation_id):
                 note=note,
             )
 
+        if demo_writes_blocked():
+            flash("Demo mode: observation changes were not saved.", "info")
+            return redirect(url_for("learner", learner_id=obs["learner_id"]))
+
         update_observation(teacher_id, observation_id, activity, skill, level, note)
         flash("Observation updated.", "info")
         return redirect(url_for("learner", learner_id=obs["learner_id"]))
@@ -419,6 +437,10 @@ def remove_observation(observation_id):
     if not obs:
         flash("Observation not found.", "info")
         return redirect(url_for("observations"))
+
+    if demo_writes_blocked():
+        flash("Demo mode: observation was not deleted.", "info")
+        return redirect(url_for("learner", learner_id=obs["learner_id"]))
 
     delete_observation(teacher_id, observation_id)
     flash("Observation deleted.", "info")
@@ -440,7 +462,7 @@ if __name__ == "__main__":
     init_db()
     if is_demo():
         ensure_demo_data()
-        set_demo_write_blocked(DEMO_BLOCK_WRITES)
+        set_demo_write_blocked(demo_writes_blocked())
 
     port = int(os.getenv("PORT", "5000"))
     app.run(debug=False, port=port)
